@@ -36,9 +36,38 @@ class GiftShop:
                 if not self.check_id(id1):
                     yield id1
 
+class GiftShopPartTwo(GiftShop):
+    "Model part two of the gift shop"
+
+    def check_id(self, identifier):
+        "Check if an identifier is good"
+
+        # Ensure identifier is a string
+        identifier = str(identifier)
+
+        # we can split the the identifier atleast two ways
+        # and at maximum n ways if its length is n
+        splits = range(2, len(identifier)+1)
+
+        for splitsize in splits:
+            # we want to cut the identifier into chunks of splitsize
+            chunks = [identifier[i:i+splitsize] for i in range(0, len(identifier), splitsize)]
+            #print(f"* Debug: chunks = {chunks}")
+
+            # now that we have the chunks the they shouldn't match each other
+            def check(chunk):
+                "check if a chunk matches the first chunk"
+                return chunks[0] == chunk
+
+            if all(filter(check, chunks[1:])):
+                return False
+
+        return True
+
 ################################################################################
 # this is part is run by the command pytest / pytest-watch
 
+# Tests for part 1
 def test_id():
     "Test if a id is valid"
 
@@ -101,6 +130,15 @@ def test_sum():
 
     gs = GiftShop()
     assert sum([int(x) for x in gs.bad_ids(ids)]) == 1227775554
+
+# Tests for part 2
+def test_part2():
+    gs = GiftShopPartTwo()
+
+    # 998-1012 now has two invalid IDs, 999 and 1010.
+    assert "999" in gs.bad_ids("998-1012")
+    assert "1010" in gs.bad_ids("998-1012")
+
 
 ################################################################################
 # this will be run when the file is executed as a program
