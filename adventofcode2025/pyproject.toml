@@ -1,0 +1,10 @@
+[project]
+name = "AoC2025"
+version = "1.0.0"
+description = "Advent of Code 2025"
+authors = [{ name = "Fred", email = "code@fwbro.de" }]
+
+dependencies = [
+    "pytest>=9.0.1",
+    "pytest-watch>=4.2.0"
+]
