@@ -16,31 +16,29 @@ class Joltage:
 
         selected_batteries = []
 
-        # aslong as we have selected less than or eq 12 batteries
-        while len(bank) >= 4:
-            # find the largest number for the decimal or left position
-            m = max(bank[:-1])
-            selected_batteries.append(m)
+        popcount = 0
+        poplimit = len(bank) - 12 # amount of selectable batteries
         
-            # remember the index
-            index = bank.index(str(m))
+        for battery in bank:
+            # always select the first battery
+            if len(selected_batteries) == 0:
+                selected_batteries = [bank[0]]
+                continue
 
-            # remove the number
-            bank.remove(m)
+            # Is the current battery better than the last selected one?
+            if battery > selected_batteries[-1] and popcount < poplimit:
+                selected_batteries.pop()
+                popcount += 1
 
-            print(bank[index:])
+            # Did we select too many batteries?
+            while len(selected_batteries) >= 12 and popcount < poplimit:
+                selected_batteries.pop()
+                popcount += 1
+                
+            selected_batteries.append(battery)
 
-            # look for the number on the right side
-            m = max(bank[index:])
-            selected_batteries.append(m)
-
-            # remove m from the bank
-            bank.remove(m)
-
-
-        # convert selected battieres to integer number
-        return int(''.join(selected_batteries[0:12]))
-
+        return int(''.join(selected_batteries))
+            
 
     def maxjoltage(self, bank):
         "Returns the maximum of joltage a bank of batteries can produce"
@@ -77,15 +75,27 @@ def test_part2_bank2():
 
     assert 811111111119 == joltage.max12("811111111111119")
 
-def est_part2_bank3():
+def test_part2_bank3():
     joltage = Joltage()
 
     assert 434234234278 == joltage.max12("234234234234278")
 
-def est_part2_bank4():
+def test_part2_bank4():
     joltage = Joltage()
 
     assert 888911112111 == joltage.max12("818181911112111")
+
+def test_line1():
+    j = Joltage()
+
+    assert 443455384464 == j.max12("2224422232242212251325212222225221223222824142211222222122322216222332122423433242142132212224222232")
+
+def test_bounds():
+    with open("data.txt", "r") as f:
+        lines = f.read().splitlines()
+
+    j = Joltage()
+    assert j.sum12(lines) > 98762499745125
 
 
 # part 1
@@ -127,8 +137,16 @@ def main():
 
     j = Joltage()
 
+
+    # Part 1 
     joltage = j.sum(lines)
-    print(f"Joltage = {joltage}")
+    print(f"Joltage for part 1 = {joltage}")
+
+    # Part 12
+    joltage = j.sum12(lines)
+    print(f"Joltage for part 2 = {joltage}")
+
+    # 98762499745125 is too low
 
 if __name__ == '__main__':
     main()
