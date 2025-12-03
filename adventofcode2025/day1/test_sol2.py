@@ -9,9 +9,9 @@ class Safe:
     # how often was the wheel turned across 0?
     passed_zero = 0
 
-    def set_dial(self, rotate):
+    def set_dial(self, value):
         "Set the dial of the safe to a value"
-        self.dial = (self.dial + rotate) % 100
+        self.dial = (self.dial + value) % 100
         if self.dial == 0:
             self.passed_zero += 1
 
