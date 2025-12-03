@@ -5,6 +5,14 @@ class Joltage:
         "Return the sum of joltages produced by banks parameter"
         return sum([self.maxjoltage(bank) for bank in banks])
 
+    def sum12(self, banks):
+        "Return the sum of joltages produced by banks parameter"
+        return sum([self.max12(bank) for bank in banks])
+
+    def max12(self, bank):
+        return 987654321111
+
+
     def maxjoltage(self, bank):
         "Returns the maximum of joltage a bank of batteries can produce"
 
@@ -21,6 +29,37 @@ class Joltage:
 ################################################################################
 # pytest
 
+# part 2
+def test_part2_sum():
+    banks = "987654321111111\n811111111111119\n234234234234278\n818181911112111"
+
+
+    joltage = Joltage()
+    
+    assert 3121910778619 == joltage.sum12(banks.split("\n"))
+
+def test_part2_bank1():
+    joltage = Joltage()
+
+    assert 987654321111 == joltage.max12("987654321111111")
+
+def test_part2_bank2():
+    joltage = Joltage()
+
+    assert 811111111119 == joltage.max12("811111111111119")
+
+def test_part2_bank3():
+    joltage = Joltage()
+
+    assert 434234234278 == joltage.max12("234234234234278")
+
+def test_part2_bank4():
+    joltage = Joltage()
+
+    assert 888911112111 == joltage.max12("818181911112111")
+
+
+# part 1
 def test_sum():
     banks = "987654321111111\n811111111111119\n234234234234278\n818181911112111"
 
