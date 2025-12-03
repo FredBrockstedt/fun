@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # see: https://adventofcode.com/2025/day/2
-from math import floor
+from math import floor, ceil
 
 class GiftShop:
     "Model the gift shop"
@@ -45,24 +45,41 @@ class GiftShopPartTwo(GiftShop):
         # Ensure identifier is a string
         identifier = str(identifier)
 
+        # Numbers of length 1 are always valid
+        if len(identifier) <= 1:
+            return True
+        
         # we can split the the identifier atleast two ways
         # and at maximum n ways if its length is n
-        splits = range(2, len(identifier)+1)
+        splits = range(ceil(len(identifier)/2), 0, -1)
 
         for splitsize in splits:
             # we want to cut the identifier into chunks of splitsize
-            chunks = [identifier[i:i+splitsize] for i in range(0, len(identifier), splitsize)]
-            #print(f"* Debug: chunks = {chunks}")
+            chunks = self.chunkstring(identifier, splitsize)
 
-            # now that we have the chunks the they shouldn't match each other
-            def check(chunk):
-                "check if a chunk matches the first chunk"
-                return chunks[0] == chunk
+            comparisons = []
 
-            if all(filter(check, chunks[1:])):
+            # now that we have the chunks, they should match each other to be invalid
+            for chunk in chunks[1:]:
+                if int(chunks[0]) != int(chunk):
+                    comparisons.append(True)
+                    break
+                else:
+                    comparisons.append(False)
+
+            # check the comparisons
+            # if all comparisons are false each chunk part matched the first part i.e. they are equal
+            if all([not s for s in comparisons]): 
                 return False
 
         return True
+
+    # Source - https://stackoverflow.com/a
+    # Posted by rlms, modified by community. See post 'Timeline' for change history
+    # Retrieved 2025-12-03, License - CC BY-SA 3.0
+    def chunkstring(self, string, length):
+        return list(string[0+i:length+i] for i in range(0, len(string), length))
+
 
 ################################################################################
 # this is part is run by the command pytest / pytest-watch
@@ -132,13 +149,83 @@ def test_sum():
     assert sum([int(x) for x in gs.bad_ids(ids)]) == 1227775554
 
 # Tests for part 2
-def test_part2():
+def test_invalid_numbers():
     gs = GiftShopPartTwo()
 
-    # 998-1012 now has two invalid IDs, 999 and 1010.
+    assert gs.check_id("12341234") == False
+    assert gs.check_id("123123123") == False
+    assert gs.check_id("1212121212") == False
+    assert gs.check_id("1111111") == False
+
+
+def test_valid_numbers():
+     numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+     gs = GiftShopPartTwo()
+
+     for number in numbers:
+         assert gs.check_id(str(number)) == True
+
+def test_number999():
+    "998-1012 now has two invalid IDs, 999 and 1010."
+    gs = GiftShopPartTwo()
+
+    assert  gs.check_id("999") == False
+
     assert "999" in gs.bad_ids("998-1012")
     assert "1010" in gs.bad_ids("998-1012")
 
+def test_number565656():
+    "565653-565659 now has one invalid ID, 565656."
+    gs = GiftShopPartTwo()
+
+    bad_ids = list(gs.bad_ids("565653-565659"))
+    assert "565656" in bad_ids
+    assert "565657" not in bad_ids
+    
+def test_number824824824():
+    "824824821-824824827 now has one invalid ID, 824824824"
+    gs = GiftShopPartTwo()
+
+    assert "824824824" in gs.bad_ids("824824821-824824827")
+
+def test_checkchunk():
+    gs = GiftShopPartTwo()
+
+    assert gs.chunkstring("54321", 5) == ["54321"]
+    assert gs.chunkstring("54321", 4) == ["5432", "1"]
+    assert gs.chunkstring("54321", 3) == ["543", "21"]
+    assert gs.chunkstring("54321", 2) == ["54", "32", "1"]
+    assert gs.chunkstring("54321", 1) == ["5", "4", "3", "2", "1"]
+
+def test_checkchunk2():
+    gs = GiftShopPartTwo()
+
+    assert gs.chunkstring("999", 3) == ["999"]
+    assert gs.chunkstring("999", 2) == ["99", "9"]
+    assert gs.chunkstring("999", 1) == ["9", "9", "9"]
+
+
+def test_sum_part2():
+    "Adding up all the invalid IDs in this example produces 4174379265"
+    line = "11-22 ,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124"
+
+    gs = GiftShopPartTwo()
+    
+    assert sum([int(x) for x in gs.bad_ids(line)]) == 4174379265
+
+
+def test_bounds():
+    "33832678425 as answer is too high"
+    gs = GiftShopPartTwo()
+
+    with open("data.txt", "r") as f:
+        line = f.read()
+
+        print([int(x) for x in gs.bad_ids(line)])
+        assert sum([int(x) for x in gs.bad_ids(line)]) < 33832678425
+        assert sum([int(x) for x in gs.bad_ids(line)]) > 4174379265
+ 
 
 ################################################################################
 # this will be run when the file is executed as a program
@@ -149,12 +236,15 @@ def main():
     with open("data.txt", "r") as f:
         line = f.read()
 
+    print("* Solving part 1")
     gs = GiftShop()
 
     print("Sum for Part1:", sum([int(x) for x in gs.bad_ids(line)]))
     
+    print("* Solving part 2")
+    gs = GiftShopPartTwo()
+    print("Sum for Part2:", sum([int(x) for x in gs.bad_ids(line)]))
 
-    # TODO: https://adventofcode.com/2025/day/2#part2
 
 if __name__ == '__main__':
     main()
