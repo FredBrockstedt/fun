@@ -49,16 +49,14 @@ class GiftShopPartTwo(GiftShop):
         if len(identifier) <= 1:
             return True
 
-
         for r in range(1, floor(len(identifier)/2)+1):
             # we want to nibble parts from left side of the identifier
             # to see if whatever we nibbled off, is a pattern?
             pattern   = identifier[:r]
-            remainder = identifier.replace(pattern, '')
 
             # if our pattern is valid, it replaces everything inside the identifier
             # string, leaving the remainder empty
-            if remainder == '':
+            if '' == identifier.replace(pattern, ''):
                 return False
         
         return True
