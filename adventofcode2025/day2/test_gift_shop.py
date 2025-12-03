@@ -40,49 +40,31 @@ class GiftShopPartTwo(GiftShop):
     "Model part two of the gift shop"
 
     def check_id(self, identifier):
-        "Check if an identifier is good"
+        "Check if an identifier is valid"
 
         # Ensure identifier is a string
         identifier = str(identifier)
 
-        # Numbers of length 1 are always valid
+        # Identifiers of length 1 are always valid
         if len(identifier) <= 1:
             return True
-        
-        # we can split the the identifier atleast two ways
-        # and at maximum n ways if its length is n
-        splits = range(ceil(len(identifier)/2), 0, -1)
 
-        for splitsize in splits:
-            # we want to cut the identifier into chunks of splitsize
-            chunks = self.chunkstring(identifier, splitsize)
 
-            comparisons = []
+        for r in range(1, floor(len(identifier)/2)+1):
+            # we want to nibble parts from left side of the identifier
+            # to see if whatever we nibbled off, is a pattern?
+            pattern   = identifier[:r]
+            remainder = identifier.replace(pattern, '')
 
-            # now that we have the chunks, they should match each other to be invalid
-            for chunk in chunks[1:]:
-                if int(chunks[0]) != int(chunk):
-                    comparisons.append(True)
-                    break
-                else:
-                    comparisons.append(False)
-
-            # check the comparisons
-            # if all comparisons are false each chunk part matched the first part i.e. they are equal
-            if all([not s for s in comparisons]): 
+            # if our pattern is valid, it replaces everything inside the identifier
+            # string, leaving the remainder empty
+            if remainder == '':
                 return False
-
+        
         return True
 
-    # Source - https://stackoverflow.com/a
-    # Posted by rlms, modified by community. See post 'Timeline' for change history
-    # Retrieved 2025-12-03, License - CC BY-SA 3.0
-    def chunkstring(self, string, length):
-        return list(string[0+i:length+i] for i in range(0, len(string), length))
-
-
 ################################################################################
-# this is part is run by the command pytest / pytest-watch
+# this is part is run by the command pytest / pytest-watch / ptw -c -n -w
 
 # Tests for part 1
 def test_id():
@@ -152,10 +134,10 @@ def test_sum():
 def test_invalid_numbers():
     gs = GiftShopPartTwo()
 
-    assert gs.check_id("12341234") == False
-    assert gs.check_id("123123123") == False
-    assert gs.check_id("1212121212") == False
-    assert gs.check_id("1111111") == False
+    not gs.check_id("12341234")
+    not gs.check_id("123123123") 
+    not gs.check_id("1212121212")
+    not gs.check_id("1111111")
 
 
 def test_valid_numbers():
@@ -164,13 +146,13 @@ def test_valid_numbers():
      gs = GiftShopPartTwo()
 
      for number in numbers:
-         assert gs.check_id(str(number)) == True
+         assert gs.check_id(str(number))
 
 def test_number999():
     "998-1012 now has two invalid IDs, 999 and 1010."
     gs = GiftShopPartTwo()
 
-    assert  gs.check_id("999") == False
+    not gs.check_id("999")
 
     assert "999" in gs.bad_ids("998-1012")
     assert "1010" in gs.bad_ids("998-1012")
@@ -189,23 +171,6 @@ def test_number824824824():
 
     assert "824824824" in gs.bad_ids("824824821-824824827")
 
-def test_checkchunk():
-    gs = GiftShopPartTwo()
-
-    assert gs.chunkstring("54321", 5) == ["54321"]
-    assert gs.chunkstring("54321", 4) == ["5432", "1"]
-    assert gs.chunkstring("54321", 3) == ["543", "21"]
-    assert gs.chunkstring("54321", 2) == ["54", "32", "1"]
-    assert gs.chunkstring("54321", 1) == ["5", "4", "3", "2", "1"]
-
-def test_checkchunk2():
-    gs = GiftShopPartTwo()
-
-    assert gs.chunkstring("999", 3) == ["999"]
-    assert gs.chunkstring("999", 2) == ["99", "9"]
-    assert gs.chunkstring("999", 1) == ["9", "9", "9"]
-
-
 def test_sum_part2():
     "Adding up all the invalid IDs in this example produces 4174379265"
     line = "11-22 ,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124"
@@ -222,7 +187,7 @@ def test_bounds():
     with open("data.txt", "r") as f:
         line = f.read()
 
-        print([int(x) for x in gs.bad_ids(line)])
+        #print([int(x) for x in gs.bad_ids(line)])
         assert sum([int(x) for x in gs.bad_ids(line)]) < 33832678425
         assert sum([int(x) for x in gs.bad_ids(line)]) > 4174379265
  
