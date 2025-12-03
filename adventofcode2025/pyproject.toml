@@ -6,5 +6,4 @@ authors = [{ name = "Fred", email = "code@fwbro.de" }]
 
 dependencies = [
     "pytest>=9.0.1",
-    "pytest-watch>=4.2.0"
-]
+    "pytest-watch>=4.2.0"]
