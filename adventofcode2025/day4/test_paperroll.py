@@ -23,10 +23,10 @@ class PaperRolls:
 
     def calc(self):
         "Create 8 offset matrizies and add them up"
-        # to count the sourroundin 8 fields of each spot
+        # to count the surrounding 8 fields of each spot
 
         # we don't want to count already empty fields
-        # so we add atleast 4 two them
+        # so we add atleast 4 to them
         no_paperroll = self.basematrix.copy()
         no_paperroll[self.basematrix == 0] = 4
         no_paperroll[no_paperroll == 1] = 0
@@ -140,7 +140,6 @@ def test_class():
 
 def test_13places_forklift_reachable(pr):
     assert pr.forklift_reachable() == 13
-    #print(pr.addmat)
 
 def test_remove_matrix(pr):
     removemat = pr.remove_paperrolls()
