@@ -12,51 +12,40 @@ import pytest
 
 class PaperRolls:
     def __init__(self, elfpuzzle):
-        self.basematrix = self.elfpuzzel2matrix(elfpuzzle)        
+        # the elf puzzle in matrix form
+        self.basematrix = self.elfpuzzel2matrix(elfpuzzle)
 
-        self.north     = None
-        self.south     = None
-        self.east      = None
-        self.west      = None
-                         
-        self.northeast = None
-        self.northwest = None
-        self.southeast = None
-        self.southwest = None
+        # helper matrix
+        self.addmat = None
 
-        self.addmat    = None
-
+        # computation of the helpermatrix
         self.calc()
 
     def calc(self):
-        # create 8 offset matrizies
+        "Create 8 offset matrizies and add them up"
         # to count the sourroundin 8 fields of each spot
 
-        self.north = self._shift_north(self.basematrix)
-        self.south = self._shift_south(self.basematrix)
-        self.east  = self._shift_east(self.basematrix)
-        self.west  = self._shift_west(self.basematrix)
-
-        self.northeast  = self._shift_north(self._shift_east(self.basematrix))
-        self.northwest  = self._shift_north(self._shift_west(self.basematrix))
-        self.southeast  = self._shift_south(self._shift_east(self.basematrix))
-        self.southwest  = self._shift_south(self._shift_west(self.basematrix))
-
+        # we don't want to count already empty fields
+        # so we add atleast 4 two them
         no_paperroll = self.basematrix.copy()
         no_paperroll[self.basematrix == 0] = 4
         no_paperroll[no_paperroll == 1] = 0
 
-        self.addmat = self.north + self.south \
-            + self.east + self.west \
-            + self.northeast + self.northwest \
-            + self.southeast + self.southwest \
+        # add every thing up
+        self.addmat = self._shift_north(self.basematrix) \
+            + self._shift_south(self.basematrix) \
+            + self._shift_east(self.basematrix) \
+            + self._shift_west(self.basematrix) \
+            + self._shift_north(self._shift_east(self.basematrix)) \
+            + self._shift_north(self._shift_west(self.basematrix)) \
+            + self._shift_south(self._shift_east(self.basematrix)) \
+            + self._shift_south(self._shift_west(self.basematrix)) \
             + no_paperroll
-
+        
     def set(self, matrix):
-        "Set the basematrix"
+        "Set the basematrix, required for part 2"
         self.basematrix = matrix.copy()
         self.calc()
-
 
     def forklift_reachable(self):
         "Count how many paper rolls are forklift reachable"
@@ -64,17 +53,23 @@ class PaperRolls:
 
     def remove_paperrolls(self):
         "Return a matrix where forklift reachable paper rolls where removed"
-        mat = self.addmat.copy()
-        # elements < 4 => -1
-        mat[mat < 4 ] = -1
-        
-        # elements >= 4 => 0
-        mat[mat >= 4 ] = 0
 
-        # subtract from basematrix
-        removed = self.basematrix + mat
+        # simulate forklifts by matrix
+        forklift = self.addmat.copy()
+
+        # Any elements with less than four paper rolls
+        # will be moved away
+        forklift[forklift < 4 ] = 1
         
-        # any negative elements => 0
+        # everything else stays the same
+        forklift[forklift >= 4 ] = 0
+
+        # let the forklifts work
+        removed = self.basematrix - forklift
+        
+        # since these are mathematical forklifts
+        # we have to clean up the negative paper rolls
+        # they leave behind
         removed[removed < 0] = 0
 
         return removed
@@ -122,59 +117,39 @@ class PaperRolls:
 # pytest
 
 @pytest.fixture
-def elfpuzzle():
-    "Elf puzzle "
-    return  ["..@@.@@@@.",
-             "@@@.@.@.@@",
-             "@@@@@.@.@@",
-             "@.@@@@..@.",
-             "@@.@@@@.@@",
-             ".@@@@@@@.@",
-             ".@.@.@.@@@",
-             "@.@@@.@@@@",
-             ".@@@@@@@@.",
-             "@.@.@@@.@."]
+def pr():
+    "Paper Roll Puzzle Object"
+    elfpuzzle =  ["..@@.@@@@.",
+                  "@@@.@.@.@@",
+                  "@@@@@.@.@@",
+                  "@.@@@@..@.",
+                  "@@.@@@@.@@",
+                  ".@@@@@@@.@",
+                  ".@.@.@.@@@",
+                  "@.@@@.@@@@",
+                  ".@@@@@@@@.",
+                  "@.@.@@@.@."]
 
+    return PaperRolls(elfpuzzle)
+    
 def test_class():
     pr = PaperRolls("@")
 
     assert hasattr(pr, 'basematrix')
-    assert hasattr(pr, 'north')
-    assert hasattr(pr, 'south')
-    assert hasattr(pr, 'east')
-    assert hasattr(pr, 'west')    
+    assert hasattr(pr, 'addmat')
 
-def test_direction_matrixes(elfpuzzle):
-    pr = PaperRolls(elfpuzzle)
-
-    print(pr.north)
-
-    # Assert all values are zero
-    not np.any(pr.north[-1])
-
-    assert pr.north.shape == (10, 10)
-    assert pr.south.shape == (10, 10)
-    assert pr.east.shape == (10, 10)
-    assert pr.west.shape == (10, 10)
-
-def test_13places_forklift_reachable(elfpuzzle):
-    pr = PaperRolls(elfpuzzle)
-
+def test_13places_forklift_reachable(pr):
     assert pr.forklift_reachable() == 13
     #print(pr.addmat)
 
-def test_remove_matrix(elfpuzzle):
-    pr = PaperRolls(elfpuzzle)
-
-    removemat =  pr.remove_paperrolls()
+def test_remove_matrix(pr):
+    removemat = pr.remove_paperrolls()
     # assert that after removeing 13 paper rolls from 71
     # we are left with 58 rolls
     assert np.count_nonzero(removemat == 1) == 58
 
-def test_matrixcreation(elfpuzzle):
+def test_matrixcreation(pr):
     "Load file and convert to NumPy array"
-
-    pr = PaperRolls(elfpuzzle)
     assert pr.basematrix.shape == (10, 10)
 
 ################################################################################
@@ -186,18 +161,19 @@ if __name__ == '__main__':
 
     with open("data.txt", "r") as f:
         lines = f.readlines()
-        pr = PaperRolls(lines)
 
-        print("* Part 1 ")
-        print(f"Forklift reachable paper rolls = {pr.forklift_reachable()}")
+    pr = PaperRolls(lines)
 
-        print("* Part 2 ")
+    print("* Part 1 ")
+    print(f"Forklift reachable paper rolls = {pr.forklift_reachable()}")
 
-        tally = 0
+    print("* Part 2 ")
 
-        while pr.forklift_reachable() > 0:
-            removemat = pr.remove_paperrolls()
-            tally += pr.forklift_reachable()
-            pr.set(removemat)
+    tally = 0
 
-        print(f"Removed paper rolls for part 2 = {tally}")
+    while pr.forklift_reachable() > 0:
+        removemat = pr.remove_paperrolls()
+        tally += pr.forklift_reachable()
+        pr.set(removemat)
+
+    print(f"Removed paper rolls for part 2 = {tally}")
