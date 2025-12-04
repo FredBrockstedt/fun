@@ -14,6 +14,21 @@ class PaperRolls:
     def __init__(self, elfpuzzle):
         self.basematrix = self.elfpuzzel2matrix(elfpuzzle)        
 
+        self.north     = None
+        self.south     = None
+        self.east      = None
+        self.west      = None
+                         
+        self.northeast = None
+        self.northwest = None
+        self.southeast = None
+        self.southwest = None
+
+        self.addmat    = None
+
+        self.calc()
+
+    def calc(self):
         # create 8 offset matrizies
         # to count the sourroundin 8 fields of each spot
 
@@ -27,7 +42,7 @@ class PaperRolls:
         self.southeast  = self._shift_south(self._shift_east(self.basematrix))
         self.southwest  = self._shift_south(self._shift_west(self.basematrix))
 
-        no_paperroll = self.basematrix
+        no_paperroll = self.basematrix.copy()
         no_paperroll[self.basematrix == 0] = 4
         no_paperroll[no_paperroll == 1] = 0
 
@@ -37,9 +52,32 @@ class PaperRolls:
             + self.southeast + self.southwest \
             + no_paperroll
 
+    def set(self, matrix):
+        "Set the basematrix"
+        self.basematrix = matrix.copy()
+        self.calc()
+
+
     def forklift_reachable(self):
+        "Count how many paper rolls are forklift reachable"
         return np.count_nonzero(self.addmat < 4)
 
+    def remove_paperrolls(self):
+        "Return a matrix where forklift reachable paper rolls where removed"
+        mat = self.addmat.copy()
+        # elements < 4 => -1
+        mat[mat < 4 ] = -1
+        
+        # elements >= 4 => 0
+        mat[mat >= 4 ] = 0
+
+        # subtract from basematrix
+        removed = self.basematrix + mat
+        
+        # any negative elements => 0
+        removed[removed < 0] = 0
+
+        return removed
             
     def __str__(self):
         return str(self.basematrix)
@@ -76,8 +114,6 @@ class PaperRolls:
 
         return matrix
 
-
-    
     def elfpuzzel2matrix(self, elfpuzzle):
         "Turns an elf puzzle into a matrix of 1 and 0"
         return np.array([[1 if ch == '@' else 0 for ch in line.strip()] for line in elfpuzzle])
@@ -127,6 +163,14 @@ def test_13places_forklift_reachable(elfpuzzle):
     assert pr.forklift_reachable() == 13
     #print(pr.addmat)
 
+def test_remove_matrix(elfpuzzle):
+    pr = PaperRolls(elfpuzzle)
+
+    removemat =  pr.remove_paperrolls()
+    # assert that after removeing 13 paper rolls from 71
+    # we are left with 58 rolls
+    assert np.count_nonzero(removemat == 1) == 58
+
 def test_matrixcreation(elfpuzzle):
     "Load file and convert to NumPy array"
 
@@ -135,11 +179,25 @@ def test_matrixcreation(elfpuzzle):
 
 ################################################################################
 # main
-if __name__ == '__main__':
+#
+# run with: python test_paperroll.py
 
+if __name__ == '__main__':
 
     with open("data.txt", "r") as f:
         lines = f.readlines()
         pr = PaperRolls(lines)
 
+        print("* Part 1 ")
         print(f"Forklift reachable paper rolls = {pr.forklift_reachable()}")
+
+        print("* Part 2 ")
+
+        tally = 0
+
+        while pr.forklift_reachable() > 0:
+            removemat = pr.remove_paperrolls()
+            tally += pr.forklift_reachable()
+            pr.set(removemat)
+
+        print(f"Removed paper rolls for part 2 = {tally}")
