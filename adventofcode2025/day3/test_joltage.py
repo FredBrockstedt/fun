@@ -5,6 +5,19 @@ class Joltage:
         "Return the sum of joltages produced by banks parameter"
         return sum([self.maxjoltage(bank) for bank in banks])
 
+    def maxjoltage(self, bank):
+        "Returns the maximum of joltage a bank of batteries can produce"
+
+        # find the largest number aslong as it is not the last
+        # and its position in the bank
+        left = max(list(bank[:-1]))
+        left_index = bank.index(str(left))
+
+        # we want to find the second number
+        right = max(list(bank[left_index+1:]))
+        
+        return 10 * int(left) + int(right)
+
     def sum12(self, banks):
         "Return the sum of joltages produced by banks parameter"
         return sum([self.max12(bank) for bank in banks])
@@ -22,36 +35,28 @@ class Joltage:
         for battery in bank:
             # always select the first battery
             if len(selected_batteries) == 0:
-                selected_batteries = [bank[0]]
+                selected_batteries = [battery]
                 continue
 
-            # Is the current battery better than the last selected one?
-            if battery > selected_batteries[-1] and popcount < poplimit:
-                selected_batteries.pop()
-                popcount += 1
+            # Toss batteries that are worse than the current one
+            for _ in range(len(selected_batteries)):
+                if battery > selected_batteries[-1] and popcount < poplimit:
+                    selected_batteries.pop()
+                    popcount += 1
+                else:
+                    break
 
-            # Did we select too many batteries?
-            while len(selected_batteries) >= 12 and popcount < poplimit:
-                selected_batteries.pop()
-                popcount += 1
-                
             selected_batteries.append(battery)
 
+            # Did we select too many batteries?
+            while len(selected_batteries) > 12:
+                selected_batteries.pop()
+                popcount += 1
+
+        # turn the list of selected battereis into a string
+        # turn the string into an integer
         return int(''.join(selected_batteries))
             
-
-    def maxjoltage(self, bank):
-        "Returns the maximum of joltage a bank of batteries can produce"
-
-        # find the largest number aslong as it is not the last
-        # and its position in the bank
-        left = max(list(bank[:-1]))
-        left_index = bank.index(str(left))
-
-        # we want to find the second number
-        right = max(list(bank[left_index+1:]))
-        
-        return 10 * int(left) + int(right)
 
 ################################################################################
 # pytest
@@ -88,7 +93,14 @@ def test_part2_bank4():
 def test_line1():
     j = Joltage()
 
-    assert 443455384464 == j.max12("2224422232242212251325212222225221223222824142211222222122322216222332122423433242142132212224222232")
+    assert 864444422232 == j.max12("2224422232242212251325212222225221223222824142211222222122322216222332122423433242142132212224222232")
+
+def test_line2():
+    j = Joltage()
+
+    assert 988888877755 == j.max12("2238627227623421225352362446932882413382783432342232284228276225212222465623527237113223452255221122")
+    
+
 
 def test_bounds():
     with open("data.txt", "r") as f:
