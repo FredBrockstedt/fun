@@ -10,6 +10,17 @@ from functools import reduce
 import operator
 
 def calc(data):
+    """
+    Reverse polich notation calculator for part 1 of
+    AoC 2025 day 6
+
+    Args:
+        data (str | list): Cephalopod math formated data, probably would work with any array of floats
+
+    Returns:
+        tally (int): The sum of any addition or multiplications made
+    """
+
     stacks = []
     tally  = 0
 
@@ -43,7 +54,6 @@ def right_to_left_in_columns(data):
     Cephalopod math is written right-to-left in columns. Each number is given in its own column,
     with the most significant digit at the top and the least significant digit at the bottom.
     """
-
     if isinstance(data, str):
         data = data.splitlines()
 
@@ -60,6 +70,16 @@ def right_to_left_in_columns(data):
         yield stack
 
 def calc2(data):
+    """
+    Reverse polich notation calculator for part 2 of AoC 2025 day 6
+
+    Args:
+        data (str | list): Cephalopod math formated data, probably would work with any array of floats
+
+    Returns:
+        tally (int): The sum of any addition or multiplications made
+    """
+
     tally = 0
     items = list(right_to_left_in_columns(data))
 
@@ -88,6 +108,7 @@ def calc2(data):
 # pytest
 @pytest.fixture
 def data():
+    "Cephalopod math table (example)"
     return """123 328  51 64 
  45 64  387 23 
   6 98  215 314
@@ -100,11 +121,11 @@ def test_part2(data):
     data = data.splitlines()
     assert calc2(data) == 3263827
 
-#def test_r2lcol():
-#    assert list(right_to_left_in_columns("abcde")) == ["edcba"]
-
 ################################################################################
 # main
+#
+# run: python test_trash_compactor.py
+
 if __name__ == '__main__':
 
     print("* Part 1")

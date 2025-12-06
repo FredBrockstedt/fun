@@ -22,7 +22,7 @@ class Safe:
             self.set_dial(-1)
 
     def rotate_right(self, x):
-        "rotate the dial to the left x times"
+        "rotate the dial to the right x times"
         x = int(x)
         for i in range(x):
             self.set_dial(1)
