@@ -1,4 +1,7 @@
-# Advent of Code 2025
+# Spoilers ahead!
+
+# Advent of Code 2025 Solutions
+
 
 Advent of Code is an Advent calendar of small programming puzzles for a variety 
 of skill levels that can be solved in any programming language you like. People 
