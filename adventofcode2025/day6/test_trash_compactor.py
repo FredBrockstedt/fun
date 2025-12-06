@@ -11,8 +11,7 @@ import operator
 
 def calc(data):
     """
-    Reverse polich notation calculator for part 1 of
-    AoC 2025 day 6
+    Reverse polish notation calculator for part 1 of AoC 2025 day 6
 
     Args:
         data (str | list): Cephalopod math formated data, probably would work with any array of floats
@@ -71,7 +70,7 @@ def right_to_left_in_columns(data):
 
 def calc2(data):
     """
-    Reverse polich notation calculator for part 2 of AoC 2025 day 6
+    Reverse polish notation calculator for part 2 of AoC 2025 day 6
 
     Args:
         data (str | list): Cephalopod math formated data, probably would work with any array of floats
