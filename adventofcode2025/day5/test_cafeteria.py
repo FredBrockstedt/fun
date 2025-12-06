@@ -57,7 +57,6 @@ class Cafeteria:
             # Maybe not?
             for oldstart, oldend in self.freshids:
                 if start <= oldstart <= end and start <= oldend <= end:
-                    print("* DEBUG: smaller ranger exists")
                     self.freshids.remove((oldstart, oldend))
 
             self.freshids.append((start, end))
@@ -91,7 +90,7 @@ class Cafeteria:
             start, end = ran
             if start <= ingredient and ingredient <= end:
                 return idx
-    
+
     def parse_range(self, ingredients):
         """
         Parse a string of ingredients 
@@ -101,7 +100,7 @@ class Cafeteria:
 
         Returns:
             start (int), end (int): The start aka 1 and the end aka 10
-       
+
         """
         start, end = ingredients.split("-")
         return int(start), int(end)
