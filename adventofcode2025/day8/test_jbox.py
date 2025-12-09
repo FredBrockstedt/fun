@@ -55,76 +55,106 @@ class Circuits:
 
     def add_connection(self, jbox1, jbox2):
         """
-        Add a jbox to the circuits
+        Add junction boxes to the circuits
 
         Args:
             jbox1: Start of the connection
             jbox2: End of the connection
         """
 
-        # TODO: there needs to be a shorter way to connect the junction boxes
-
-        # Both junction boxes are completly new
-        if jbox1 not in self.used_jboxes and jbox2 not in self.used_jboxes:
-            # Create a new circuit
-            logging.debug(f"Creating a new circuit for {jbox1} and {jbox2}")
-            circuit = Circuit()
-            circuit.add(jbox1)
-            circuit.add(jbox2)
-            self.circuits.append(circuit)
-
-            self.used_jboxes.add(jbox1)
-            self.used_jboxes.add(jbox2)
+        jbox1_is_used = jbox1 in self.used_jboxes
+        jbox2_is_used = jbox2 in self.used_jboxes
+        jbox1_is_not_used = not jbox1_is_used
+        jbox2_is_not_used = not jbox2_is_used
 
 
-        # Jbox 1 is in a circuit, to which we want to add jbox2
-        elif jbox1 in self.used_jboxes and jbox2 not in self.used_jboxes:
-            logging.debug(f"jbox1 = {jbox1} is already known")
-            for circuit in self.circuits:
-                if circuit.contains(jbox1):
-                    logging.debug(f"Adding jbox2 = {jbox2} to circuit = {circuit}")
-                    circuit.add(jbox2)
-                    self.used_jboxes.add(jbox2)
+        if jbox1_is_used:
+            # Both junction boxes are already in use and we have to join two circuits, maybe
+            if jbox2_is_used:
+                logging.debug(f"jbox1 = {jbox1} and jbox2 = {jbox2} are already known")
 
-        # Jbox 2 is in a circuit, to which we want to add jbox1
-        elif jbox1 not in self.used_jboxes and jbox2 in self.used_jboxes:
-            logging.debug(f"jbox2 = {jbox2} is already known")
-            for circuit in self.circuits:
-                if circuit.contains(jbox2):
-                    logging.debug(f"Adding jbox1 = {jbox1} to circuit = {circuit}")
-                    circuit.add(jbox1)
-                    self.used_jboxes.add(jbox1)
+                circuit1 = self.contains(jbox1)
+                circuit2 = self.contains(jbox2)
 
-        # Both junction boxes are already in use and we have to join two circuits, maybe
-        elif jbox1 in self.used_jboxes and jbox2 in self.used_jboxes:
-            logging.debug(f"jbox1 = {jbox1} and jbox2 = {jbox2} are already known")
+                # we do nothing, as both junction boxes are already in the same circuit
+                if circuit1 == circuit2:
+                    logging.debug("Both boxes are in {circuit1}, skipping")
+                    return
+
+                # they are in different circuits that need to be joined
+                self.join(circuit1, circuit2)
+
+            # Jbox 1 is in a circuit, to which we want to add jbox2
+            if jbox2_is_not_used:
+                logging.debug(f"jbox1 = {jbox1} is already known")
+
+                self.add(jbox2, self.contains(jbox1))
             
-            for circuit1 in self.circuits:
-                if circuit1.contains(jbox1):
-                    # Find jbox1 circuit and ...
-                    logging.debug(f"jbox1 = {jbox1} found in {circuit1}")
-                    
-                    for circuit2 in self.circuits:
-                        if circuit2.contains(jbox2):
-                            # we need to check if both jboxes are in the same circuit
-                            if circuit1 == circuit2:
-                                # we do nothing, as both junction boxes are already in the same circuit
-                                logging.debug("Both boxes are in {circuit1}, skipping")
-                                return
+        if jbox1_is_not_used:
+            # Both junction boxes are completly new
+            if jbox2_is_not_used:
+                logging.debug(f"Creating a new circuit for {jbox1} and {jbox2}")
 
-                            # they are in different circuits that need to be joined
-                            logging.debug(f"jbox2 = {jbox2} found in {circuit2}")
-                            for jbox in circuit2.jboxes:
-                                # ... add all the junction boxes of jbox2 circuit
-                                logging.debug(f"{circuit2} - {jbox} -> {circuit1}")
-                                circuit1.add(jbox)
+                circuit = Circuit()
+                self.add(jbox1, circuit)
+                self.add(jbox2, circuit)
+                self.circuits.append(circuit)
 
-                            # remove circuit2
-                            self.circuits.remove(circuit2)
+            # Jbox 2 is in a circuit, to which we want to add jbox1
+            if jbox2_is_used:
+                logging.debug(f"jbox2 = {jbox2} is already known")
 
-        else:
-            logging.error("This case should not exist!")
+                self.add(jbox1, self.contains(jbox2))
 
+
+    def join(self, circuit1, circuit2):
+        """
+        Join two circuits by moving junction boxes from circuit2 to circuit1 and removing circuit2
+
+        Args:
+           circuit1: Circuit object to recieve junction boxes
+           circuit2: Circuit object to be removed
+        """
+        # copy the junction boxes from circuit2 to circuit1
+        circuit1.jboxes.update(circuit2.jboxes)
+
+        # remove circuit2
+        self.circuits.remove(circuit2)
+
+            
+    def add(self, jbox, circuit):
+        """
+        Add a jbox to a circuit
+
+        Args:
+           jbox:    The index of the junction box to add to the circuit
+           circuit: Circuit object to which jbox will be added
+        """
+        logging.debug(f"Adding jbox = {jbox} to circuit = {circuit}")
+
+        circuit.add(jbox)
+
+        # keep track of used junction boxes
+        self.used_jboxes.add(jbox)
+
+
+    def contains(self, jbox):
+        """
+        Find the circuit that contains the junction box jbox
+
+        Args:
+           jbox: Index of the junction box which circuit you are looking for
+
+        Returns:
+           circuit: The Circuit object that contains the junction box
+           None:    No circuit could be found that contains the junction box
+        """
+        for circuit in self.circuits:
+            if circuit.contains(jbox):
+                logging.debug(f"jbox = {jbox} found in circuit = {circuit}")
+                return circuit
+
+        return None
 
     def __len__(self):
         "Return the length of the circuits"
