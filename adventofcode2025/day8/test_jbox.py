@@ -6,7 +6,7 @@ import operator
 from functools import reduce
 
 import logging
-logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(encoding='utf-8', level=logging.WARNING)
 
 from io import StringIO
 import numpy as np
@@ -62,6 +62,8 @@ class Circuits:
             jbox2: End of the connection
         """
 
+        # TODO: there needs to be a shorter way to connect the junction boxes
+
         # Both junction boxes are completly new
         if jbox1 not in self.used_jboxes and jbox2 not in self.used_jboxes:
             # Create a new circuit
@@ -93,13 +95,15 @@ class Circuits:
                     circuit.add(jbox1)
                     self.used_jboxes.add(jbox1)
 
-        # Both junction boxes are already in use and we have to join two circuits
+        # Both junction boxes are already in use and we have to join two circuits, maybe
         elif jbox1 in self.used_jboxes and jbox2 in self.used_jboxes:
             logging.debug(f"jbox1 = {jbox1} and jbox2 = {jbox2} are already known")
+            
             for circuit1 in self.circuits:
                 if circuit1.contains(jbox1):
                     # Find jbox1 circuit and ...
                     logging.debug(f"jbox1 = {jbox1} found in {circuit1}")
+                    
                     for circuit2 in self.circuits:
                         if circuit2.contains(jbox2):
                             # we need to check if both jboxes are in the same circuit
@@ -117,9 +121,9 @@ class Circuits:
 
                             # remove circuit2
                             self.circuits.remove(circuit2)
-        
+
         else:
-            logging.debug("This case should not exist!")
+            logging.error("This case should not exist!")
 
 
     def __len__(self):
@@ -133,6 +137,7 @@ class Circuits:
 
 class JBox:
     """
+    TODO: A btter name for this class would have been, Playground
     Represent a junction boxes as found in
     https://adventofcode.com/2025/day/8
 
@@ -158,6 +163,17 @@ class JBox:
         """
         self.matrix = np.loadtxt(string, delimiter=',')
 
+
+    def from_file(self, filepath):
+        """
+        Parse a matrix from a file located at filepath
+
+        Args:
+            filepath: str or os.path object pointing to a csv file
+
+        """
+        self.matrix = np.loadtxt(filepath, delimiter=',')
+        
     def calc_distances(self):
         """
         Compute the distances between the junction boxes 
@@ -191,18 +207,26 @@ class JBox:
         # remove zeros
         return list(filter(lambda x: x[0] != 0, jboxes))
 
-    def create_circuits(self, amount):
+    def create_circuits(self, end, start=0):
         """
         Create circuits
 
         Args:
-            amount: How many circuits to create
+            end:   How many circuits to create
+            start: Set the start, this is helpful, if you would like to add additional circuits
+
+        Return:
+            (cable[1],  cable[2]): The two jbox, which connect everything to one circuit
         """
         cables = self.closest()
 
-        for cable in cables[0:amount]:
+        for cable in cables[start:end]:
             self.circuits.add_connection(cable[1], cable[2])
 
+            if len(self.circuits.used_jboxes) == len(self.matrix):
+                logging.debug(f"Adding {cable[1]} = {self.matrix[cable[1]]}, {cable[2]} = {self.matrix[cable[2]]}")
+                return cable[1], cable[2]
+                
 
     def part1_sum(self):
         """
@@ -215,6 +239,9 @@ class JBox:
 
 ################################################################################
 # pytest
+#
+# run this section with: ptw -c -w -v -- --log-cli-level=info
+
 
 @pytest.fixture
 def example():
@@ -393,3 +420,50 @@ def test_sum(example):
     jbox.create_circuits(10)
 
     assert 40 == jbox.part1_sum()
+
+def test_part2(example):
+    jbox = JBox()
+    jbox.from_stringio(example)
+    jbox.calc_distances()
+
+    # from the example:
+    # to form a single circuit [...] the junction boxes at 216,146,977 and 117,168,530
+    # jbox 10 and 12 are the last to be added before there is a single circuit
+
+    # there are 20 * 20 = 400 possible connections, lets add them all
+    jbox1, jbox2 = jbox.create_circuits(400)
+    assert 10 == jbox1
+    assert 12 == jbox2
+
+    # multiplying the X coordinates of those two junction boxes (216 and 117) produces 25272
+    assert 25272 == jbox.matrix[jbox1][0] * jbox.matrix[jbox2][0]
+    
+def main():
+
+    jbox = JBox()
+    jbox.from_file("data.txt")
+    jbox.calc_distances()
+    jbox.create_circuits(1000)
+
+    s = jbox.part1_sum()
+    
+    print(f"Sum for part 1 = {s}")
+
+    print("* Part 2")
+
+    
+    # continue connecting the closest unconnected pairs of junction boxes together until they're all in the same circuit.
+    # ^ there are 499500 possible connections, we can add them in one go
+    jbox1, jbox2 = jbox.create_circuits(499500, 1001)
+
+    # What do you get if you multiply together the X coordinates of the last two junction boxes you need to connect?
+
+    #  516088335 => is too low
+    # 3077744708 => also too low
+    # 8520040659 == right
+
+    m = jbox.matrix[jbox1][0] * jbox.matrix[jbox2][0]
+    print(f"Product sum for part 2 = {m}")
+    
+if __name__ == '__main__':
+    main()
