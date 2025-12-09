@@ -15,7 +15,7 @@ class Circuit:
     """
     A circuit is a connection between two or more junction boxes
 
-    Args:
+    Attributes:
         jboxes: A set of junction boxes
     """
 
@@ -49,6 +49,14 @@ class Circuit:
         return str(self.jboxes)
 
 class Circuits:
+    """
+    Represent a set of circuits used by elfs to decorate Christmas stuff
+
+    Attributes:
+        circuits:    A list of Circuit objects
+        used_jboxes: Junction boxes already in use. Very helpful when you want to determine, if all connections have been made
+    """
+
     def __init__(self):
         self.circuits = []
         self.used_jboxes = set()
@@ -68,6 +76,7 @@ class Circuits:
         jbox2_is_not_used = not jbox2_is_used
 
 
+        # Remark: Read the second if statement, two lines down, as AND
         if jbox1_is_used:
             # Both junction boxes are already in use and we have to join two circuits, maybe
             if jbox2_is_used:
@@ -165,10 +174,9 @@ class Circuits:
         return s
 
 
-class JBox:
+class Playground:
     """
-    TODO: A btter name for this class would have been, Playground
-    Represent a junction boxes as found in
+    Represent a playground of junction boxes as found in
     https://adventofcode.com/2025/day/8
 
     Attributes:
@@ -178,7 +186,7 @@ class JBox:
     """
 
     def __init__(self):
-        "Setup the JBox object"
+        "Setup the Playground object"
         self.matrix = None
         self.distances = None
         self.circuits = Circuits()
@@ -221,7 +229,7 @@ class JBox:
 
     def closest(self):
         """
-        Return the closes junction boxs
+        Return the closest junction boxes
 
         Returns:
             jboxes: A list of tuples that contain (<distance>, <from junction box>, <to junction box>)
@@ -239,7 +247,7 @@ class JBox:
 
     def create_circuits(self, end, start=0):
         """
-        Create circuits
+        Start creating circuits
 
         Args:
             end:   How many circuits to create
@@ -296,56 +304,48 @@ def example():
 984,92,344
 425,690,689"""
     return StringIO(data)
-    
 
 
 def test_inputoutput(example):
-    jbox = JBox()
-    jbox.from_stringio(example)
+    playground = Playground()
+    playground.from_stringio(example)
 
-    #assert jbox.matrix != None
-    assert jbox.matrix.shape == (20, 3)
+    assert playground.matrix.shape == (20, 3)
 
 def test_distances(example):
-    jbox = JBox()
-    jbox.from_stringio(example)
+    playground = Playground()
+    playground.from_stringio(example)
 
-    jbox.calc_distances()
-    print(jbox.distances)
-    assert jbox.distances[0][0] == 0
-    assert jbox.distances.shape == (20, 20)
+    playground.calc_distances()
+    print(playground.distances)
+    assert playground.distances[0][0] == 0
+    assert playground.distances.shape == (20, 20)
 
 
 def test_euclidean_distance(example):
-    jbox = JBox()
-    jbox.from_stringio(example)
+    playground = Playground()
+    playground.from_stringio(example)
 
     j = 7
     k = 19
 
-    diff = np.abs(jbox.matrix[j] - jbox.matrix[k])
+    diff = np.abs(playground.matrix[j] - playground.matrix[k])
     result = int(np.sqrt(diff @ diff.T))
 
     assert 328 == result
 
-    jbox.calc_distances()
+    playground.calc_distances()
 
-    assert int(jbox.distances[j][k]) == result
+    assert int(playground.distances[j][k]) == result
 
     
-def test_jbox_distances(example):
-    jbox = JBox()
-    jbox.from_stringio(example)
-    jbox.calc_distances()
+def test_playground_distances(example):
+    playground = Playground()
+    playground.from_stringio(example)
+    playground.calc_distances()
 
-    lst = jbox.closest()
+    lst = playground.closest()
     
-    #print(np.argsort(jbox.distances, axis=1))
-    #print(np.sort(jbox.distances, axis=1))
-
-    #for dist, jbox1, jbox2 in lst:
-    #    print(int(dist), jbox.matrix[jbox1], jbox.matrix[jbox2], jbox1, jbox2)
-
     # In this example, the two junction boxes which are closest together are 162,817,812 and 425,690,689
     assert lst[0][1] == 0
     assert lst[0][2] == 19
@@ -359,56 +359,56 @@ def test_jbox_distances(example):
     assert lst[2][2] == 13
 
     # The next two junction boxes are 431,825,988 and 425,690,689.
-    print(f"{jbox.matrix[lst[3][1]]} == 431,825,988")
-    print(f"{jbox.matrix[lst[3][2]]} == 425,690,689")
-    print(f"{jbox.distances[7][19]}")
+    print(f"{playground.matrix[lst[3][1]]} == 431,825,988")
+    print(f"{playground.matrix[lst[3][2]]} == 425,690,689")
+    print(f"{playground.distances[7][19]}")
     assert lst[3][1] == 7
     assert lst[3][2] == 19
 
 def test_1junction(example):
-    jbox = JBox()
-    jbox.from_stringio(example)
-    jbox.calc_distances()
+    playground = Playground()
+    playground.from_stringio(example)
+    playground.calc_distances()
 
-    jbox.create_circuits(1)
+    playground.create_circuits(1)
 
-    assert 1 == len(jbox.circuits)
-    assert 2 == len(jbox.circuits.circuits[0])
+    assert 1 == len(playground.circuits)
+    assert 2 == len(playground.circuits.circuits[0])
 
 
 def test_2junction(example):
-    jbox = JBox()
-    jbox.from_stringio(example)
-    jbox.calc_distances()
+    playground = Playground()
+    playground.from_stringio(example)
+    playground.calc_distances()
 
-    jbox.create_circuits(2)
+    playground.create_circuits(2)
 
-    assert 1 == len(jbox.circuits)
-    assert 3 == len(jbox.circuits.circuits[0])
+    assert 1 == len(playground.circuits)
+    assert 3 == len(playground.circuits.circuits[0])
 
 def test_3junction(example):
     "The next two junction boxes to connect are 906,360,560 and 805,96,715. After connecting them, there is a circuit containing 3 junction boxes, a circuit containing 2 junction boxes"
-    jbox = JBox()
-    jbox.from_stringio(example)
-    jbox.calc_distances()
+    playground = Playground()
+    playground.from_stringio(example)
+    playground.calc_distances()
 
-    jbox.create_circuits(3)
+    playground.create_circuits(3)
 
-    assert 2 == len(jbox.circuits)
-    assert 3 == len(jbox.circuits.circuits[0])
-    assert 2 == len(jbox.circuits.circuits[1])
+    assert 2 == len(playground.circuits)
+    assert 3 == len(playground.circuits.circuits[0])
+    assert 2 == len(playground.circuits.circuits[1])
 
 def test_4junction(example):
     "The next two junction boxes are 431,825,988 and 425,690,689. Because these two junction boxes were already in the same circuit, nothing happens!"
-    jbox = JBox()
-    jbox.from_stringio(example)
-    jbox.calc_distances()
+    playground = Playground()
+    playground.from_stringio(example)
+    playground.calc_distances()
 
-    jbox.create_circuits(4)
+    playground.create_circuits(4)
 
-    assert 2 == len(jbox.circuits)
-    assert 3 == len(jbox.circuits.circuits[0])
-    assert 2 == len(jbox.circuits.circuits[1])
+    assert 2 == len(playground.circuits)
+    assert 3 == len(playground.circuits.circuits[0])
+    assert 2 == len(playground.circuits.circuits[1])
 
     
 def test_junctions(example):
@@ -418,64 +418,61 @@ def test_junctions(example):
     contains 4 junction boxes, two circuits which contain 2 junction
     boxes each, and seven circuits which each contain a single junction box.
     """
-    jbox = JBox()
-    jbox.from_stringio(example)
-    jbox.calc_distances()
+    playground = Playground()
+    playground.from_stringio(example)
+    playground.calc_distances()
 
-    # for dist, jbox1, jbox2 in jbox.closest()[0:10]:
-    #     print(f"{jbox.matrix[jbox1]} - {int(dist)} -> {jbox.matrix[jbox2]}")
-    
-    jbox.create_circuits(10)
+    playground.create_circuits(10)
 
-    assert 4 == len(jbox.circuits)
+    assert 4 == len(playground.circuits)
 
-    logging.debug(f"circuit[1] = {jbox.circuits.circuits[0]}")
-    assert 4 == len(jbox.circuits.circuits[0])
+    logging.debug(f"circuit[1] = {playground.circuits.circuits[0]}")
+    assert 4 == len(playground.circuits.circuits[0])
 
-    logging.debug(f"circuit[1] = {jbox.circuits.circuits[1]}")
-    assert 5 == len(jbox.circuits.circuits[1])
+    logging.debug(f"circuit[1] = {playground.circuits.circuits[1]}")
+    assert 5 == len(playground.circuits.circuits[1])
 
-    logging.debug(f"circuit[2] = {jbox.circuits.circuits[2]}")
-    assert 2 == len(jbox.circuits.circuits[2])
+    logging.debug(f"circuit[2] = {playground.circuits.circuits[2]}")
+    assert 2 == len(playground.circuits.circuits[2])
 
-    logging.debug(f"circuit[3] = {jbox.circuits.circuits[3]}")
-    assert 2 == len(jbox.circuits.circuits[3])
+    logging.debug(f"circuit[3] = {playground.circuits.circuits[3]}")
+    assert 2 == len(playground.circuits.circuits[3])
 
 
 def test_sum(example):
-    jbox = JBox()
-    jbox.from_stringio(example)
-    jbox.calc_distances()
+    playground = Playground()
+    playground.from_stringio(example)
+    playground.calc_distances()
     
-    jbox.create_circuits(10)
+    playground.create_circuits(10)
 
-    assert 40 == jbox.part1_sum()
+    assert 40 == playground.part1_sum()
 
 def test_part2(example):
-    jbox = JBox()
-    jbox.from_stringio(example)
-    jbox.calc_distances()
+    playground = Playground()
+    playground.from_stringio(example)
+    playground.calc_distances()
 
     # from the example:
     # to form a single circuit [...] the junction boxes at 216,146,977 and 117,168,530
     # jbox 10 and 12 are the last to be added before there is a single circuit
 
     # there are 20 * 20 = 400 possible connections, lets add them all
-    jbox1, jbox2 = jbox.create_circuits(400)
+    jbox1, jbox2 = playground.create_circuits(400)
     assert 10 == jbox1
     assert 12 == jbox2
 
     # multiplying the X coordinates of those two junction boxes (216 and 117) produces 25272
-    assert 25272 == jbox.matrix[jbox1][0] * jbox.matrix[jbox2][0]
+    assert 25272 == playground.matrix[jbox1][0] * playground.matrix[jbox2][0]
     
 def main():
 
-    jbox = JBox()
-    jbox.from_file("data.txt")
-    jbox.calc_distances()
-    jbox.create_circuits(1000)
+    jbox = Playground()
+    playground.from_file("data.txt")
+    playground.calc_distances()
+    playground.create_circuits(1000)
 
-    s = jbox.part1_sum()
+    s = playground.part1_sum()
     
     print(f"Sum for part 1 = {s}")
 
@@ -484,7 +481,7 @@ def main():
     
     # continue connecting the closest unconnected pairs of junction boxes together until they're all in the same circuit.
     # ^ there are 499500 possible connections, we can add them in one go
-    jbox1, jbox2 = jbox.create_circuits(499500, 1001)
+    jbox1, jbox2 = playground.create_circuits(499500, 1001)
 
     # What do you get if you multiply together the X coordinates of the last two junction boxes you need to connect?
 
@@ -492,7 +489,7 @@ def main():
     # 3077744708 => also too low
     # 8520040659 == right
 
-    m = jbox.matrix[jbox1][0] * jbox.matrix[jbox2][0]
+    m = playground.matrix[jbox1][0] * playground.matrix[jbox2][0]
     print(f"Product sum for part 2 = {m}")
     
 if __name__ == '__main__':
