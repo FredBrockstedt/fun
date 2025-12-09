@@ -467,7 +467,7 @@ def test_part2(example):
     
 def main():
 
-    jbox = Playground()
+    playground = Playground()
     playground.from_file("data.txt")
     playground.calc_distances()
     playground.create_circuits(1000)
@@ -490,7 +490,7 @@ def main():
     # 8520040659 == right
 
     m = playground.matrix[jbox1][0] * playground.matrix[jbox2][0]
-    print(f"Product sum for part 2 = {m}")
+    print(f"Product sum for part 2 = {int(m)}")
     
 if __name__ == '__main__':
     main()
