@@ -261,8 +261,9 @@ class Playground:
         for cable in cables[start:end]:
             self.circuits.add_connection(cable[1], cable[2])
 
+            # Did we make all the connections?
             if len(self.circuits.used_jboxes) == len(self.matrix):
-                logging.debug(f"Adding {cable[1]} = {self.matrix[cable[1]]}, {cable[2]} = {self.matrix[cable[2]]}")
+                logging.debug(f"Final junction boxes to be added: {cable[1]} = {self.matrix[cable[1]]} and {cable[2]} = {self.matrix[cable[2]]}")
                 return cable[1], cable[2]
                 
 
