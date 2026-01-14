@@ -3,6 +3,9 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# CD/DVD images
+*.iso
+
 # C extensions
 *.so
 

@@ -1,0 +1,35 @@
+---
+# run this with ansible-playbook downloader.yml
+
+- name: Download Linux distributions from SBOM
+  hosts: localhost
+  gather_facts: false
+
+  vars_files:
+    - vars/sbom.yml
+
+  tasks:
+    - name: Ensure download directory exists
+      file:
+        path: distros
+        state: directory
+        mode: "0755"
+
+    - name: "Ensure distro family folder for {{ item.name }} exist"
+      file:
+        path: "distros/{{ item.family }}"
+        state: directory
+        mode: "0755"
+      loop: "{{ sbom }}"
+  
+    
+    - name: "Download distribution iso files"
+      get_url:
+        url: "{{ item.url }}"
+        dest: "distros/{{ item.family }}/{{ item.family }}-{{ item.version }}.iso"
+        mode: "0644"
+        checksum: "{{ item.checksum }}"
+  
+      loop: "{{ sbom }}"
+      loop_control:
+        label: "{{ item.name }}"
