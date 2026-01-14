@@ -1,15 +1,116 @@
+---
 sbom:
+  # Red Hat
+  - name: rhel-10
+    family: redhat
+    url: "https://archive.org/download/rhel-10.0-x86_64-resources/rhel-10.0-x86_64-dvd.iso"
+    checksum: "sha256:edce2dd6f8e1d1b2ff0b204f89b0659bc9e320d175beb7caad60712957a19608"
+  
+  - name: rocky-10.1
+    family: redhat
+    url: "https://download.rockylinux.org/pub/rocky/10/isos/x86_64/Rocky-10.1-x86_64-dvd1.iso"
+    checksum: "sha256:55f96d45a052c0ed4f06309480155cb66281a008691eb7f3f359957205b1849a"
+
+  - name: alma-10.1
+    family: redhat
+    url: "https://ftp.gwdg.de/pub/linux/almalinux/10.1/isos/x86_64/AlmaLinux-10.1-x86_64-dvd.iso"
+    checksum: "sha256:4597a7483fd7b49bbb7a46958fe2574b7c575531e5ee64ad4d6c1d2779494400"
+
+  - name: Fedora-23
+    family: fedora
+    url: "https://download.fedoraproject.org/pub/fedora/linux/releases/43/Workstation/x86_64/iso/Fedora-Workstation-Live-43-1.6.x86_64.iso"
+    checksum: "sha256:2a4a16c009244eb5ab2198700eb04103793b62407e8596f30a3e0cc8ac294d77"
+
+  - name: Fedora-Silverblue-43
+    family: fedora
+    url: "https://download.fedoraproject.org/pub/fedora/linux/releases/43/Silverblue/x86_64/iso/Fedora-Silverblue-ostree-x86_64-43-1.6.iso"
+    checksum: "sha256:d0d84ba4a857faab545f0f5a42ecb239d565bd03518daf39fb3fe0608007cdaa"
+
+  # Debian
   - name: ubuntu-22.04
     family: ubuntu
     url: "http://releases.ubuntu.com/jammy/ubuntu-22.04.5-desktop-amd64.iso"
     checksum: "sha256:bfd1cee02bc4f35db939e69b934ba49a39a378797ce9aee20f6e3e3e728fefbf"
 
-   - name: rocky-10.1
-     family: redhat
-     url: "https://download.rockylinux.org/pub/rocky/10/isos/x86_64/Rocky-10.1-x86_64-dvd1.iso"
-     checksum: "sha256:55f96d45a052c0ed4f06309480155cb66281a008691eb7f3f359957205b1849a"
+  - name: ubuntu-25.10
+    family: ubuntu
+    url: "https://ftp.halifax.rwth-aachen.de/ubuntu-releases/25.10/ubuntu-25.10-desktop-amd64.iso"
+    checksum: "sha256:32e30d72ae4798c633323a2684d94a11582bb03a6ab38d2b0d5ae5eabc5e577b"
 
-   - name: debian-13.3
-     family: debian
-     url: "https://cdimage.debian.org/debian-cd/current/amd64/iso-dvd/debian-13.3.0-amd64-DVD-1.iso"
-     checksum: "sha256:7b7837fa2ed64fd45224bff905643bd3ab32157dcc0ab1dc68aad5b9dc2d4d39"
+  - name: mint-22.3
+    family: ubuntu
+    url: "https://ftp5.gwdg.de/pub/linux/debian/mint/stable/22.3/linuxmint-22.3-cinnamon-64bit.iso"
+    checksum: "sha256:a081ab202cfda17f6924128dbd2de8b63518ac0531bcfe3f1a1b88097c459bd4"
+
+  - name: debian-13.3
+    family: debian
+    url: "https://cdimage.debian.org/debian-cd/current/amd64/iso-dvd/debian-13.3.0-amd64-DVD-1.iso"
+    checksum: "sha256:7b7837fa2ed64fd45224bff905643bd3ab32157dcc0ab1dc68aad5b9dc2d4d39"
+
+  - name: mx-linux-25_xfce
+    family: mxlinux
+    url: "https://ftp.gwdg.de/pub/linux/mx/iso/MX/Final/Xfce/MX-25_Xfce_x64.iso"
+    checksum: "sha256:b5249000fb7ee9b2929c93dff8eae38d496e74d02f53b4d30a7e71f82360b3d9"
+
+  - name: mx-linux-25_ahs_xfce
+    family: mxlinux
+    url: "https://ftp.gwdg.de/pub/linux/mx/iso/MX/Final/Xfce/MX-25_Xfce_ahs_x64.iso"
+    checksum: "sha256:a45158d415870ca2b2aa685c6398a25455d03bd03d5dfabf74c256bfb21ae56c"
+
+  # Arch
+  - name: archlinux-2026
+    family: arch
+    url: "https://ftp.spline.inf.fu-berlin.de/mirrors/archlinux/iso/2026.01.01/archlinux-2026.01.01-x86_64.iso"
+    checksum: "sha256:16502a7c18eed827ecead95c297d26f9f4bd57c4b3e4a8f4e2b88cf60e412d6f"
+
+  - name: CachyOS-25.11
+    family: arch
+    url: "https://cdn77.cachyos.org/ISO/desktop/251129/cachyos-desktop-linux-251129.iso"
+    checksum: "sha256:2ab25f72ce8fece890b440cf9e260fc3d57ae4f5fb5308086f670240de02da7b"
+
+  # Suse
+  - name: opensuse-16.0
+    family: suse
+    url: "https://download.opensuse.org/distribution/leap/16.0/offline/Leap-16.0-offline-installer-x86_64.install.iso"
+    checksum: "sha256:d780a228058fb4688a31b5bde22d7b97c86e04a2ced33f3d7c8e88a710d96d24"
+
+  # Slackware
+  - name: slackware-15
+    family: slackware
+    url: "https://mirrors.slackware.com/slackware/slackware-iso/slackware-15.0-iso/slackware-15.0-install-dvd.iso"
+    checksum: "md5:c7dc8c447c7c9cbb83399f19c48b5669"
+
+  # BSD / Solaris
+  - name: FreeBSD-15
+    family: bsd
+    url: "https://ftp.de.freebsd.org/FreeBSD/releases/amd64/amd64/ISO-IMAGES/15.0/FreeBSD-15.0-RELEASE-amd64-dvd1.iso"
+    checksum: "sha256:8cf8e03d8df16401fd5a507480a3270091aa30b59ecf79a9989f102338e359aa"
+
+  - name: smartos-26
+    family: solaris
+    url: "https://us-central.manta.mnx.io/Joyent_Dev/public/SmartOS/20260108T003758Z/smartos-20260108T003758Z.iso"
+    checksum: "sha256:79bf6f5bc4c5d1d5c01cc51c2469333733da90d79bb98dbf9380e3d31136bffc"
+
+  # Live systems
+  - name: kali-2025.4
+    family: live
+    url: "https://cdimage.kali.org/kali-2025.4/kali-linux-2025.4-installer-amd64.iso"
+    checksum: "sha256:3b4a3a9f5fb6532635800d3eda94414fb69a44165af6db6fa39c0bdae750c266"
+
+  - name: knoppix-9.1
+    family: live
+    url: "https://ftp.gwdg.de/pub/linux/knoppix/dvd/KNOPPIX_V9.1DVD-2021-01-25-EN.iso"
+    checksum: "sha256:c6892dda97fa603b01bc04e89c56097df607142a4531c27fb439bcc27a4aee5d"
+
+  # Immutable distros
+  - name: talos-1.12.1
+    family: immutable
+    url: "https://github.com/siderolabs/talos/releases/download/v1.12.1/metal-amd64.iso"
+    checksum: "sha256:16b9695e8af76cbf7862db5bb5290b5e229dae9fd41e683a1daca09d627b132b"
+
+    
+# template
+#  - name: 
+#    family: 
+#    url: ""
+#    checksum: "sha256:"
