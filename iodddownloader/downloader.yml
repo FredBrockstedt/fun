@@ -26,7 +26,7 @@
     - name: "Download distribution iso files"
       get_url:
         url: "{{ item.url }}"
-        dest: "distros/{{ item.family }}/{{ item.family }}-{{ item.version }}.iso"
+        dest: "distros/{{ item.family }}/{{ item.name }}.iso"
         mode: "0644"
         checksum: "{{ item.checksum }}"
   
