@@ -5,13 +5,14 @@ sbom:
     url: "http://releases.ubuntu.com/jammy/ubuntu-22.04.5-desktop-amd64.iso"
     checksum: "sha256:bfd1cee02bc4f35db939e69b934ba49a39a378797ce9aee20f6e3e3e728fefbf"
 
-#  - name: rocky 9.4
-#    family: redhat
-#    version: "9.4"
-#    url: "https://download.rockylinux.org/pub/rocky/9/isos/x86_64/Rocky-9.4-x86_64-dvd.iso"
+   - name: rocky 10.1
+     family: redhat
+     version: "10.1"
+     url: "https://download.rockylinux.org/pub/rocky/10/isos/x86_64/Rocky-10.1-x86_64-dvd1.iso"
+     checksum: "sha256:55f96d45a052c0ed4f06309480155cb66281a008691eb7f3f359957205b1849a"
 
-#  - name: debian 12.5
-#    family: debian
-#    version: "12.5"
-#    url: "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.5.0-amd64-netinst.iso"
-#
+   - name: debian 13.3.
+     family: debian
+     version: "13.3"
+     url: "https://cdimage.debian.org/debian-cd/current/amd64/iso-dvd/debian-13.3.0-amd64-DVD-1.iso"
+     checksum: "sha256:7b7837fa2ed64fd45224bff905643bd3ab32157dcc0ab1dc68aad5b9dc2d4d39"
