@@ -30,6 +30,7 @@
         dest: "distros/{{ item.family }}/{{ item.name }}.iso"
         mode: "0644"
         checksum: "{{ item.checksum }}"
+        timeout: 1200
   
       loop: "{{ sbom }}"
       loop_control:
